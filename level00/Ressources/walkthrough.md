@@ -1,6 +1,6 @@
 Je commence par analyser mon environnement :
 
-```
+```bash
 $ id && pwd && ls -la
 uid=1000(level00) gid=1000(level00) groups=1000(level00),100(users)
 /home/users/level00
@@ -16,7 +16,7 @@ lrwxrwxrwx  1 root    root       7 Sep 13  2016 .bash_profile -> .bashrc
 
 Je trouve un binaire `level00`, que je tente d'éxecuter :
 
-```
+```bash
 $ ./level00
 ***********************************
 *            -Level00 -           *
@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
 
 Je vois que l'accès au shell est derrière "v4 == 5276", je tente naturellement donc :
 
-```
+```bash
 $ ./level00
 ***********************************
 *            -Level00 -           *

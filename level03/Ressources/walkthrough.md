@@ -1,6 +1,6 @@
 Je commence par analyser mon environnement :
 
-```
+```bash
 $ id && pwd && ls -la
 uid=1003(level03) gid=1003(level03) groups=1003(level03),100(users)
 /home/users/level03
@@ -17,7 +17,7 @@ lrwxrwxrwx  1 root    root       7 Sep 13  2016 .bash_profile -> .bashrc
 
 Je trouve un binaire `level03`, que je tente d'éxecuter :
 
-```
+```bash
 $ ./level03
 ***********************************
 *               level03         **
@@ -39,7 +39,7 @@ Je suis très confus, puisqu'en voulant écrire le prologue habituel de ce walkt
 
 Par curiosité, je reviens sur la session du `level03` et tente un d'autres mot de passe aléatoire :
 
-```
+```bash
 $ ./level03
 ***********************************
 *               level03         **
@@ -67,7 +67,7 @@ Invalid Password
 
 Mais le plus étonnant, c'est que le mot de passe de mon test d'origine ne marche plus également :
 
-```
+```bash
 $ ./level03
 ***********************************
 *               level03         **
@@ -166,7 +166,7 @@ test(322424844, 322424845);
 
 Et atteindre le `case 1:`. J'essaye cette hypothèse :
 
-```
+```bash
 $ ./level03
 ***********************************
 *               level03         **
@@ -193,7 +193,7 @@ Je tente donc d'atteindre le `case 18:` avec l'input suivant : `322424845 - 18 =
 
 J'essaye :
 
-```
+```bash
 $ ./level03
 ***********************************
 *               level03         **

