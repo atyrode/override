@@ -107,7 +107,7 @@ Pour utiliser cet exploit, je dois commencer par trouver de combien de bytes le 
 
 Pour cela, j'utilise `gdb` :
 
-```bash
+```h
 $ gdb ./level01 -q
 Reading symbols from /home/users/level01/level01...(no debugging symbols found)...done.
 
@@ -144,7 +144,7 @@ J'inclus l'adresse de `exit()` après celle de `system()` afin que le binaire s'
 
 Pour trouver l'adresse de `exit()`, `system()` et `/bin/sh`, j'utilise `gdb` :
 
-```bash
+```h
 $ gdb ./level01 -q
 (gdb) b main
 Breakpoint 1 at 0x80484d5
@@ -220,7 +220,7 @@ nope, incorrect password...
 
 Sans succès, j'analyse à nouveau mon procédé et note ma remarque sur :
 
-```bash
+```h
 0x080484d5 <+5>:     and    $0xfffffff0,%esp
 ```
 

@@ -153,7 +153,7 @@ Je vais utiliser l'exploit `Ret2Libc` comme dans les précédents level afin d'a
 
 J'utilise `gdb` pour les trouver avec une nouvelle méthode trouvée [ici](https://corruptedprotocol.medium.com/elf-x86-stack-buffer-overflow-basic-6-rootme-app-system-introduction-to-ret2libc-83945accc435) pour obtenir l'adresse de `system()` et d'`exit()`:
 
-```bash
+```h
 $ gdb ./level07 -q
 Reading symbols from /home/users/level07/level07...(no debugging symbols found)...done.
 (gdb) b main
@@ -194,7 +194,7 @@ Mapped address spaces:
 
 Je dois ensuite calculer le "padding" nécessaire, étant donné qu'il est question ici de plusieurs buffer et plusieurs variables sur plusieurs fonctions, je vais utiliser une méthode différente pour calculer le padding, en utilisant `gdb` ainsi que des `breakpoint`, puis la commande `info registers` :
 
-```bash
+```h
 (gdb) disas main
 Dump of assembler code for function main:
    0x08048723 <+0>:     push   %ebp
@@ -241,7 +241,7 @@ Je calcule la différence entre `esp` et `ebp` soit `0xffffd628 - 0xffffd440 = 0
 
 J'identifie ensuite le décalage par `esp` comme dans les niveaux précédent, ici, dans `gdb` :
 
-```bash
+```h
    0x08048791 <+110>:   lea    0x24(%esp),%ebx <--- 0x24 = 36
    0x08048795 <+114>:   mov    $0x0,%eax
    0x0804879a <+119>:   mov    $0x64,%edx <-------- 0x64 = 100 (= taille du buffer)

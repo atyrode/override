@@ -81,7 +81,7 @@ Je ne comprend pas grand chose à cette fonction, mais j'observe très rapidemen
 
 J'utilise `gdb` pour trouver ces adresses :
 
-```bash
+```h
 $ gdb ./level04 -q
 Reading symbols from /home/users/level04/level04...(no debugging symbols found)...done.
 
@@ -144,7 +144,7 @@ Mapped address spaces:
 
 Comme au `level01`, je cherche le padding du payload en analysant `gdb` :
 
-```bash
+```h
 (gdb) disas main
 Dump of assembler code for function main:
    0x080486c8 <+0>:     push   %ebp
