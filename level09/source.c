@@ -1,6 +1,6 @@
 typedef struct s_msg
 {
-    char msg[140];
+    char text[140];
     char user[40];
     int len;
 } t_msg;

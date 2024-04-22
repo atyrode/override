@@ -28,18 +28,20 @@ Je décompile le binaire avec [Dogbolt](https://dogbolt.org/?id=061a1527-1288-4c
 ```c
 int main(int argc, const char **argv)
 {
-  char buffer[100]; // [esp+28h] [ebp-70h] BYREF
-  unsigned int i; // [esp+8Ch] [ebp-Ch]
+  char buffer[100]; 
+  unsigned int i;
 
   i = 0;
   fgets(buffer, 100, stdin);
+
   for ( i = 0; i < strlen(buffer); ++i )
   {
     if ( buffer[i] > 64 && buffer[i] <= 90 )
-      buffer[i] ^= 32;
+      buffer[i] ^= 32; // <---------------------3 shellcode will be stored in an env variable because some of its bytes gets caught here and changed
   }
-  printf(buffer);
-  exit(0);
+  
+  printf(buffer); // <--------------------------1 format string vulnerability, arbitrary code can be ran here since printf uses user input and no args
+  exit(0); // <---------------------------------2 Ret2Plt exploit used with printf, rewrites what the PLT for exit() redirects to shellcode
 }
 ```
 

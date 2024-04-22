@@ -33,19 +33,19 @@ $ ./level09
 Je décompile le binaire avec [Dogbolt](https://dogbolt.org/?id=f1613b2e-2c3d-4b75-97e9-8137a7378884#BinaryNinja=304) en recoupant avec les compilateurs qui marchent et l'ASM :
 
 ```c
-typedef struct s_msg
+typedef struct msg
 {
-    char msg[140];
+    char text[140];
     char user[40];
-    int len;
-} t_msg;
+    int len; // <-------------------------------2 this value will be overflowed by the loop in 1. by 1 byte so value can be changed up to 255
+} msg;
 
 void secret_backdoor()
 {
     char buf[128];
 
     fgets(buf, 128, stdin);
-    system(buf);
+    system(buf); // <---------------------------5 user input is used as a system call, so sending "/bin/sh" in the payload will do
 }
 
 void set_msg(t_msg *msg)
@@ -58,7 +58,7 @@ void set_msg(t_msg *msg)
 
     fgets(buf, 1024, stdin);
 
-    strncpy(msg->text, buf, msg->len);
+    strncpy(msg->text, buf, msg->len); // <-----3 changing the value of msg->len allows for another overflow here which can be used for a return address exploit
 }
 
 void set_username(t_msg *msg)
@@ -73,7 +73,7 @@ void set_username(t_msg *msg)
 
     fgets(buf, 128, stdin);
 
-    for (i = 0; i <= 40 && buf[i]; i++)
+    for (i = 0; i <= 40 && buf[i]; i++) // <----1 loops 41 times but msg->user is 40 bytes so overflow is possible
         msg->user[i] = buf[i];
     printf(">: Welcome, %s", msg->user);
 }
@@ -94,7 +94,7 @@ int main()
 {
     puts("--------------------------------------------\n|   ~Welcome to l33t-m$n ~    v1337        |\n--------------------------------------------");
     handle_msg();
-    return 0;
+    return 0;  // <-----------------------------4 the buffer overflow in set_msg() rewrites the return address here and it points to secret_backdoor()
 }
 ```
 
@@ -200,7 +200,7 @@ Donc, ce qui sera écrit après le padding de 200 bytes ré-écrira l'adresse de
 $1 = {<text variable, no debug info>} 0x55555555488c <secret_backdoor>
 ```
 
-En additionnant mes 200 bytes de padding ainsi que l'adresse de secret_backdoor, j'obtiens un total de 208 bytes. Il faut donc que l'overflow original qui ré-écrit sur un byte à `msg->len` lui donne la valeur de 208, afin qu'au moment où :
+En additionnant mes 200 bytes de padding ainsi que l'adresse de `secret_backdoor()`, j'obtiens un total de 208 bytes. Il faut donc que l'overflow original qui ré-écrit sur un byte à `msg->len` lui donne la valeur de 208, afin qu'au moment où :
 
 ```c
 void set_msg(t_msg *msg)
@@ -210,7 +210,7 @@ void set_msg(t_msg *msg)
 }
 ```
 
-`set_msg` copie le buffer dans `msg->text`, il écrive 208 caractères, et non 140 au maximum, ce qui va ré-écrire la stack de `handle_msg()` et changer son adresse de retour à `secret_backdoor()`.
+`set_msg()` copie le buffer dans `msg->text`, il écrive 208 caractères, et non 140 au maximum, ce qui va ré-écrire la stack de `handle_msg()` et changer son adresse de retour à `secret_backdoor()`.
 
 Je dois construire le payload avec les considérations suivante :
 

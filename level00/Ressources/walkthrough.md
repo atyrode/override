@@ -31,17 +31,19 @@ Je tente de décompiler le binaire avec [Dogbolt](https://dogbolt.org/?id=d2ff38
 ```c
 int main(int argc, const char **argv)
 {
-  int v4; // [esp+1Ch] [ebp-4h] BYREF
+  int password; // [esp+1Ch] [ebp-4h] BYREF
 
   puts("***********************************");
   puts("* \t     -Level00 -\t\t  *");
   puts("***********************************");
   printf("Password:");
-  __isoc99_scanf("%d", &v4);
-  if ( v4 == 5276 )
+
+  scanf("%d", &password); // <------------------1 password is user defined and converted with %d
+
+  if ( password == 5276 ) // <------------------2 type "5276" in stdin
   {
     puts("\nAuthenticated!");
-    system("/bin/sh");
+    system("/bin/sh"); // <---------------------3 shell access
     return 0;
   }
   else
@@ -52,7 +54,7 @@ int main(int argc, const char **argv)
 }
 ```
 
-Je vois que l'accès au shell est derrière "v4 == 5276", je tente naturellement donc :
+Je vois que l'accès au shell est derrière "password == 5276" et que la variable password est initialisée par `scanf`, je tente naturellement donc :
 
 ```bash
 $ ./level00

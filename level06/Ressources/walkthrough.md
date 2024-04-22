@@ -35,9 +35,9 @@ Je décompile le binaire avec [Dogbolt](https://dogbolt.org/?id=9f72fea8-183c-4b
 ```c
 int auth(char *login, int serial)
 {
-  int i; // [esp+14h] [ebp-14h]
-  int pass; // [esp+18h] [ebp-10h]
-  int log_len; // [esp+1Ch] [ebp-Ch]
+  int i; 
+  int pass; 
+  int log_len;
 
   login[strcspn(s, "\n")] = 0;
   log_len = strnlen(login, 32);
@@ -54,7 +54,7 @@ int auth(char *login, int serial)
   }
   else
   {
-    pass = (login[3] ^ 0x1337) + 6221293;
+    pass = (login[3] ^ 0x1337) + 6221293; // <--2 python script is used to reverse the logic and find the serial matching any username
     for ( i = 0; i < log_len; ++i )
     {
       if ( login[i] <= 31 )
@@ -67,8 +67,8 @@ int auth(char *login, int serial)
 
 int main(int argc, const char **argv)
 {
-  int serial; // [esp+2Ch] [ebp-24h] BYREF
-  char login[28]; // [esp+30h] [ebp-20h] BYREF
+  int serial;
+  char login[28];
 
   puts("***********************************");
   puts("*\t\tlevel06\t\t  *");
@@ -83,7 +83,7 @@ int main(int argc, const char **argv)
   printf("-> Enter Serial: ");
   scanf("%u", &serial);
 
-  if ( auth(login, serial) )
+  if ( auth(login, serial) ) // <---------------1 user input for login and serial must pass auth to access /bin/sh further down
     return 1;
 
   puts("Authenticated!");

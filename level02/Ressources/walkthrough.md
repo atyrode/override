@@ -55,7 +55,7 @@ int main(int argc, const char **argv)
     exit(1);
   }
 
-  pass_len = fread(flag, 1, 41, stream);
+  pass_len = fread(flag, 1, 41, stream); // <---1 next level's flag gets stored in flag variable
 
   flag[strcspn(flag, "\n")] = 0;
 
@@ -85,7 +85,7 @@ int main(int argc, const char **argv)
 
   if ( strncmp(flag, password, 41) )
   {
-    printf(user_name);
+    printf(user_name); // <---------------------2 format string vulnerability allows us to read stack, and therefore the value of 'flag'
     puts(" does not have access!");
     exit(1);
   }
@@ -105,7 +105,7 @@ Je ne peux pas utiliser de `break` dans `gdb` pour investiguer où se trouve la 
 
 Je vais donc "bruteforcer" la lecture de la stack au travers d'un petit script python :
 
-```bash
+```h
 $ python -c 'print("%p " * 100)'| ./level02
 ===== [ Secure Access System v1.0 ] =====
 /***************************************\

@@ -79,7 +79,7 @@ int main(int ac, char **av)
 
     log_wrapper(log, "Starting back up: ", av[1]);
 
-    file = fopen(av[1], "r");
+    file = fopen(av[1], "r"); // <--------------2 creating a /home/.../.pass file in /tmp/backups to circumvent permissions allows getting the pass
     if (!file)
     {
         printf("ERROR: Failed to open %s\n", av[1]);
@@ -95,7 +95,7 @@ int main(int ac, char **av)
         exit(1);
     }
 
-    while ((c = fgetc(file)) != -1)
+    while ((c = fgetc(file)) != -1) // <--------1 reads the file passed as arg and write to a file named the same in ./backups
         write(fd, &c, 1uLL);
 
     log_wrapper(log, "Finished back up ", argv[1]);

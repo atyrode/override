@@ -1,13 +1,15 @@
 int main(int argc, const char **argv)
 {
-  int key;
+  int password;
 
   puts("***********************************");
   puts("* \t     -Level00 -\t\t  *");
   puts("***********************************");
   printf("Password:");
-  __isoc99_scanf("%d", &key);
-  if ( input == key )
+
+  scanf("%d", &password);
+
+  if ( password == 5276 )
   {
     puts("\nAuthenticated!");
     system("/bin/sh");

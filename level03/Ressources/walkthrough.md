@@ -91,10 +91,10 @@ int decrypt(char a1)
   len = strlen(buffer);
 
   for ( i = 0; i < len; ++i )
-    buffer[i] ^= a1;
+    buffer[i] ^= a1; // <-----------------------4 a1 = 18 here, transforms buffer ("Q}|u`sfg~sf{}|a3") into "Congratulations!"
 
   if ( !strcmp(buffer, "Congratulations!") )
-    return system("/bin/sh");
+    return system("/bin/sh"); // <--------------5 shell opened if a1 was 18
   else
     return puts("\nInvalid Password");
 }
@@ -116,7 +116,7 @@ int test(int a1, int a2)
     case 9:
     case 16:
     case 17:
-    case 18:
+    case 18: // <-------------------------------3 providing 322424827 as user input match case 18
     case 19:
     case 20:
     case 21:
@@ -140,8 +140,8 @@ int main(int argc, const char **argv)
   puts("***********************************");
 
   printf("Password:");
-  scanf("%d", &savedregs);
-  test(savedregs, 322424845);
+  scanf("%d", &savedregs); // <-----------------1 fetch user input as int
+  test(savedregs, 322424845); // <--------------2 user input is substracted to 322424845
 
   return 0;
 }

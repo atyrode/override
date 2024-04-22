@@ -79,8 +79,8 @@ int store_number(int *buffer)
     num = get_unum();
     printf(" Index: ");
     index = get_unum();
-    if ((index % 3 == 0) || (index >> 24 == 183))
-    {
+    if ((index % 3 == 0) || (index >> 24 == 183)) 
+    { // <--------------------------------------3 overflow happens at index 114 so gets caught by 114 % 3 == 0, int overflow is used to pass this check
         puts(" *** ERROR! ***");
         puts("   This index is reserved for wil!");
         puts(" *** ERROR! ***");
@@ -88,7 +88,7 @@ int store_number(int *buffer)
     }
     else
     {
-        buffer[index] = num;
+        buffer[index] = num; // <---------------2 user input 'index' can overflow the int buffer
         return 0;
     }
     return 0;
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 {
     int ret;
     char command[20];
-    unsigned int buffer[100];
+    unsigned int buffer[100]; // <--------------1 buffer declared with 400 bytes (100 * 4 per int)
 
     ret = 0;
     memset(buffer, 0, sizeof(buffer));
